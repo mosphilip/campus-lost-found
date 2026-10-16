@@ -1,0 +1,16 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+db.sqlite3
+
+# Uploaded photos
+backend/media/
+
+# Node
+node_modules/
+frontend/dist/
+
+# Editor and secrets
+.vscode/
+.env

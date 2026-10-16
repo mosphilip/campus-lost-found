@@ -1,0 +1,130 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Arial, sans-serif;
+  background: #0b0b14;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The animated border */
+.box {
+  position: relative;
+  width: 380px;
+  height: 440px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0b0b14;
+}
+
+.box::before,
+.box::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 380px;
+  height: 440px;
+  transform-origin: bottom right;
+  animation: spin 6s linear infinite;
+}
+
+.box::before {
+  background: linear-gradient(0deg, transparent, transparent, #00eeff, #00eeff);
+}
+
+.box::after {
+  background: linear-gradient(0deg, transparent, transparent, #ff00bb, #ff00bb);
+  animation-delay: -3s;
+}
+
+@keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* The dark form sitting on top of the border */
+.form {
+  position: absolute;
+  inset: 3px;
+  background: #15151f;
+  border-radius: 10px;
+  z-index: 10;
+  padding: 40px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.form h2 {
+  color: #fff;
+  text-align: center;
+  font-weight: 500;
+}
+
+.input-box { position: relative; }
+
+.input-box input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  border-bottom: 2px solid #aaa;
+  color: #fff;
+  font-size: 16px;
+  padding: 10px 0;
+}
+
+.input-box span {
+  position: absolute;
+  left: 0;
+  top: 10px;
+  color: #aaa;
+  pointer-events: none;
+  transition: 0.3s;
+}
+
+.input-box input:focus ~ span,
+.input-box input:valid ~ span {
+  color: #fff;
+  font-size: 12px;
+  transform: translateY(-24px);
+}
+
+.links {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.links a { color: #ccc; text-decoration: none; }
+
+.btn {
+  width: 40%;
+  padding: 10px;
+  border: none;
+  border-radius: 45px;
+  background: #fff;
+  color: #000;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn:active { opacity: 0.8; }
+
+.message {
+  color: #fff;
+  font-size: 14px;
+  text-align: center;
+}
+
+.box.tall { height: 540px; }
+
+.box.tall::before,
+.box.tall::after { height: 540px; }
