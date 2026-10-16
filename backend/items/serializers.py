@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Item
+from .models import Item, Claim
 
 
 class ItemSerializer(serializers.ModelSerializer):
@@ -20,3 +20,13 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
+
+
+class ClaimSerializer(serializers.ModelSerializer):
+    claimant = serializers.ReadOnlyField(source='claimant.username')
+    item_title = serializers.ReadOnlyField(source='item.title')
+
+    class Meta:
+        model = Claim
+        fields = ['id', 'item', 'item_title', 'claimant', 'message', 'status', 'created_at']
+        read_only_fields = ['item', 'status']

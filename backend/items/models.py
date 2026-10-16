@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 
+
 class Item(models.Model):
     TYPE_CHOICES = [('lost', 'Lost'), ('found', 'Found')]
     STATUS_CHOICES = [('open', 'Open'), ('claimed', 'Claimed'), ('returned', 'Returned')]
@@ -26,3 +27,26 @@ class Item(models.Model):
 
     def __str__(self):
         return f"{self.get_type_display()}: {self.title}"
+
+
+class Claim(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name='claims')
+    claimant = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='claims')
+    message = models.TextField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        constraints = [
+            models.UniqueConstraint(fields=['item', 'claimant'], name='one_claim_per_person_per_item')
+        ]
+
+    def __str__(self):
+        return f"{self.claimant} claims {self.item.title} ({self.status})"
