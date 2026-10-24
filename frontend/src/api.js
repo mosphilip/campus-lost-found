@@ -133,3 +133,26 @@ export async function submitClaim(id, message) {
 
   return data
 }
+
+export async function getReceivedClaims() {
+  const response = await authFetch(`${API_URL}/claims/received/`)
+  if (!response.ok) throw new Error('Could not load claims on your items')
+  return response.json()
+}
+
+export async function getMyClaims() {
+  const response = await authFetch(`${API_URL}/claims/mine/`)
+  if (!response.ok) throw new Error('Could not load your claims')
+  return response.json()
+}
+
+export async function decideClaim(id, action) {
+  const response = await authFetch(`${API_URL}/claims/${id}/${action}/`, {
+    method: 'POST',
+  })
+  const data = await response.json().catch(() => ({}))
+  if (!response.ok) {
+    throw new Error(data.detail || 'Could not update this claim')
+  }
+  return data
+}

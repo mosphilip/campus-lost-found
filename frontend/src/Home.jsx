@@ -26,8 +26,9 @@ export default function Home() {
     <div className="home">
       <header className="nav">
         <span className="logo">Campus Lost &amp; Found</span>
-       <div className="nav-links">
+<div className="nav-links">
   <Link to="/post" className="nav-btn">Post an item</Link>
+  {loggedIn && <Link to="/dashboard" className="nav-btn">Dashboard</Link>}
   {loggedIn ? (
     <button
       className="nav-btn"
