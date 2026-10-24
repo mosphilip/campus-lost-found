@@ -105,3 +105,31 @@ export async function register(username, email, password) {
 
   return response.json()
 }
+
+export async function getItem(id) {
+  const response = await fetch(`${API_URL}/items/${id}/`)
+
+  if (!response.ok) {
+    throw new Error('Could not find this item')
+  }
+
+  return response.json()
+}
+
+export async function submitClaim(id, message) {
+  const response = await authFetch(`${API_URL}/items/${id}/claim/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message }),
+  })
+
+  const data = await response.json().catch(() => ({}))
+
+  if (!response.ok) {
+    throw new Error(
+      data.detail || data.message?.[0] || 'Could not send your claim. Try again.'
+    )
+  }
+
+  return data
+}

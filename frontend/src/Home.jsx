@@ -75,7 +75,8 @@ export default function Home() {
 
       <section className="grid">
         {visible.map((item) => (
-          <article className={`card ${item.type}`} key={item.id}>
+          <Link to={`/items/${item.id}`} key={item.id} className="card-link">
+<article className={`card ${item.type}`}>
             {item.photo ? (
               <img src={item.photo} alt={item.title} />
             ) : (
@@ -96,6 +97,7 @@ export default function Home() {
               </p>
             </div>
           </article>
+          </Link>
         ))}
       </section>
 
