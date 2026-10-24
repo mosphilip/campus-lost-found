@@ -84,6 +84,14 @@ class ClaimViewSet(viewsets.ReadOnlyModelViewSet):
         return self.decide(request, 'rejected')
 
 
+class MyItemsView(generics.ListAPIView):
+    serializer_class = ItemSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Item.objects.filter(posted_by=self.request.user)
+
+
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer

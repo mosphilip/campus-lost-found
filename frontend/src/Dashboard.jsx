@@ -1,6 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { getReceivedClaims, getMyClaims, decideClaim } from './api'
+import {
+  getReceivedClaims,
+  getMyClaims,
+  decideClaim,
+  getMyItems,
+  updateItemStatus,
+  deleteItem,
+} from './api'
 import './Dashboard.css'
 
 const STATUS_TEXT = {
@@ -10,6 +17,7 @@ const STATUS_TEXT = {
 }
 
 export default function Dashboard() {
+  const [myItems, setMyItems] = useState([])
   const [received, setReceived] = useState([])
   const [mine, setMine] = useState([])
   const [error, setError] = useState('')
@@ -17,6 +25,7 @@ export default function Dashboard() {
 
   async function load() {
     try {
+      setMyItems(await getMyItems())
       setReceived(await getReceivedClaims())
       setMine(await getMyClaims())
     } catch (err) {
@@ -38,13 +47,34 @@ export default function Dashboard() {
     }
   }
 
+  async function markReturned(id) {
+    setError('')
+    try {
+      await updateItemStatus(id, 'returned')
+      await load()
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
+  async function remove(id) {
+    if (!window.confirm('Delete this item? This cannot be undone.')) return
+    setError('')
+    try {
+      await deleteItem(id)
+      await load()
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
   if (!loggedIn) {
     return (
       <div className="dash-page">
         <div className="dash-wrap">
           <h1>My dashboard</h1>
           <p className="dash-empty">
-            <Link to="/login">Log in</Link> to see your claims.
+            <Link to="/login">Log in</Link> to see your items and claims.
           </p>
         </div>
       </div>
@@ -58,6 +88,37 @@ export default function Dashboard() {
         <h1>My dashboard</h1>
 
         {error && <p className="dash-error">{error}</p>}
+
+        <h2>My items</h2>
+        {myItems.length === 0 && (
+          <p className="dash-empty">
+            You haven't posted anything yet. <Link to="/post">Post an item</Link>
+          </p>
+        )}
+        {myItems.map((item) => (
+          <div className="dash-card" key={item.id}>
+            <p className="dash-title">
+              <Link to={`/items/${item.id}`}>{item.title}</Link>
+            </p>
+            <p className="dash-who">
+              {item.type === 'lost' ? 'Lost' : 'Found'} at {item.location}
+            </p>
+            <p className="dash-msg">Status: {item.status}</p>
+            <div className="dash-actions">
+              {item.status !== 'returned' && (
+                <button
+                  className="dash-approve"
+                  onClick={() => markReturned(item.id)}
+                >
+                  Mark as returned
+                </button>
+              )}
+              <button className="dash-reject" onClick={() => remove(item.id)}>
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
 
         <h2>Claims on my items</h2>
         {received.length === 0 && (

@@ -156,3 +156,26 @@ export async function decideClaim(id, action) {
   }
   return data
 }
+
+export async function getMyItems() {
+  const response = await authFetch(`${API_URL}/my-items/`)
+  if (!response.ok) throw new Error('Could not load your items')
+  return response.json()
+}
+
+export async function updateItemStatus(id, status) {
+  const response = await authFetch(`${API_URL}/items/${id}/`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status }),
+  })
+  if (!response.ok) throw new Error('Could not update this item')
+  return response.json()
+}
+
+export async function deleteItem(id) {
+  const response = await authFetch(`${API_URL}/items/${id}/`, {
+    method: 'DELETE',
+  })
+  if (!response.ok) throw new Error('Could not delete this item')
+}
