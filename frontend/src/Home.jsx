@@ -5,6 +5,7 @@ import './Home.css'
 
 export default function Home() {
   const [items, setItems] = useState([])
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
@@ -14,6 +15,7 @@ export default function Home() {
     getItems()
       .then(setItems)
       .catch((err) => setError(err.message))
+      .finally(() => setLoading(false))
   }, [])
 
   const visible = items.filter((item) => {
@@ -26,23 +28,23 @@ export default function Home() {
     <div className="home">
       <header className="nav">
         <span className="logo">Campus Lost &amp; Found</span>
-<div className="nav-links">
-  <Link to="/post" className="nav-btn">Post an item</Link>
-  {loggedIn && <Link to="/dashboard" className="nav-btn">Dashboard</Link>}
-  {loggedIn ? (
-    <button
-      className="nav-btn"
-      onClick={() => {
-        logout()
-        setLoggedIn(false)
-      }}
-    >
-      Log out
-    </button>
-  ) : (
-    <Link to="/login" className="nav-btn">Log in</Link>
-  )}
-</div>
+        <div className="nav-links">
+          <Link to="/post" className="nav-btn">Post an item</Link>
+          {loggedIn && <Link to="/dashboard" className="nav-btn">Dashboard</Link>}
+          {loggedIn ? (
+            <button
+              className="nav-btn"
+              onClick={() => {
+                logout()
+                setLoggedIn(false)
+              }}
+            >
+              Log out
+            </button>
+          ) : (
+            <Link to="/login" className="nav-btn">Log in</Link>
+          )}
+        </div>
       </header>
 
       <section className="hero">
@@ -72,37 +74,39 @@ export default function Home() {
         </div>
       </section>
 
+      {loading && <p className="empty">Loading items...</p>}
       {error && <p className="error">{error}</p>}
 
       <section className="grid">
         {visible.map((item) => (
           <Link to={`/items/${item.id}`} key={item.id} className="card-link">
-<article className={`card ${item.type}`}>
-            {item.photo ? (
-              <img src={item.photo} alt={item.title} />
-            ) : (
-              <div className="no-photo">No photo</div>
-            )}
-            <div className="card-body">
-              <span className="status">
-                {item.type === 'lost' ? 'Lost' : 'Found'}
-              </span>
-              <h3>{item.title}</h3>
-              <p className="where">{item.location}</p>
-              <p className="when">
-                {new Date(item.date).toLocaleDateString(undefined, {
-                  day: 'numeric',
-                  month: 'short',
-                  year: 'numeric',
-                })}
-              </p>
-            </div>
-          </article>
+            <article className={`card ${item.type}`}>
+              {item.photo ? (
+                <img src={item.photo} alt={item.title} />
+              ) : (
+                <div className="no-photo">No photo</div>
+              )}
+              <div className="card-body">
+                <span className="status">
+                  {item.type === 'lost' ? 'Lost' : 'Found'}
+                  {item.status !== 'open' && ` (${item.status})`}
+                </span>
+                <h3>{item.title}</h3>
+                <p className="where">{item.location}</p>
+                <p className="when">
+                  {new Date(item.date).toLocaleDateString(undefined, {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </p>
+              </div>
+            </article>
           </Link>
         ))}
       </section>
 
-      {!error && visible.length === 0 && (
+      {!loading && !error && visible.length === 0 && (
         <p className="empty">
           No items match. Try a different word, or switch the filter to All.
         </p>

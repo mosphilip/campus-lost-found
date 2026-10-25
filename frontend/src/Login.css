@@ -128,3 +128,8 @@ body {
 
 .box.tall::before,
 .box.tall::after { height: 540px; }
+
+
+@media (max-width: 420px) {
+  .box { transform: scale(0.85); }
+}
